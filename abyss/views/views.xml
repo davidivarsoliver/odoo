@@ -1,0 +1,80 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+
+    <record model="ir.ui.view" id="abyss.player_list">
+      <field name="name">abyss list</field>
+      <field name="model">abyss.player</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="age"/>
+          <field name="success"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="abyss.character_list">
+      <field name="name">abyss list</field>
+      <field name="model">abyss.character</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="type"/>
+          <field name="stars"/>
+        </tree>
+      </field>
+    </record>
+
+
+    <!-- actions opening views on models -->
+
+    <record model="ir.actions.act_window" id="abyss.player_action_window">
+      <field name="name">Abyss Players</field>
+      <field name="res_model">abyss.player</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+     <record model="ir.actions.act_window" id="abyss.character_action_window">
+      <field name="name">Abyss Characters</field>
+      <field name="res_model">abyss.character</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <!-- server action to the one above -->
+<!--
+    <record model="ir.actions.server" id="abyss.action_server">
+      <field name="name">abyss server</field>
+      <field name="model_id" ref="model_abyss_abyss"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": model._name,
+        }
+      </field>
+    </record>
+-->
+
+    <!-- Top menu item -->
+
+    <menuitem name="Abyss" id="abyss.menu_root"/>
+
+    <!-- menu categories -->
+
+    <menuitem name="Game" id="abyss.menu_1" parent="abyss.menu_root"/>
+
+
+    <!-- actions -->
+
+    <menuitem name="Players" id="abyss.menu_1_list" parent="abyss.menu_1"
+              action="abyss.player_action_window"/>
+
+    <menuitem name="Characters" id="abyss.menu_2_list" parent="abyss.menu_1"
+              action="abyss.character_action_window"/>
+
+
+  </data>
+</odoo>
