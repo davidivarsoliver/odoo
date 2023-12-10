@@ -53,12 +53,12 @@ class Player(models.Model):
         elif not self.weapons:
             pass
 
-    @api.onchange('characters')
+    @api.onchange('characters', 'weapons')
     def _onchange_characters(self):
         for character in self.characters:
-            if character.weapon_type and not any(weapon.type == character.weapon_type for weapon in self.weapons):
+            if character.weapon_type and not any(
+                    weapon.weapon_type == character.weapon_type for weapon in self.weapons):
                 raise ValidationError("No tienes un arma del tipo necesario para este personaje.")
-
 
     @api.depends('birth_date')
     def _get_age(self):
