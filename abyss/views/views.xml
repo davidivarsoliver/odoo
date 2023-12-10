@@ -10,9 +10,124 @@
           <field name="name"/>
           <field name="age"/>
           <field name="success"/>
+            <field name="level"/>
+            <field name="experience"/>
+            <field name="characters" widget="many2many_tags" options="{'no_create': True}" />
+            <field name="weapons" widget="many2many_tags" options="{'no_create': True}" />
         </tree>
       </field>
     </record>
+
+     <record model="ir.ui.view" id="abyss.player_tree_view">
+            <field name="name">abyss player</field>
+            <field name="model">abyss.player</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="level"/>
+                    <field name="experience"/>
+                    <field name="money"/>
+                    <field name="characters" widget="many2many_tags" options="{'no_create': True}" />
+                    <field name="weapons" widget="many2many_tags" options="{'no_create': True}" />
+                </tree>
+            </field>
+        </record>
+
+      <record model="ir.ui.view" id="abyss.player_search">
+            <field name="name">Abyss Player Search</field>
+            <field name="model">abyss.player</field>
+            <field name="arch" type="xml">
+        <search>
+            <field name="name"/>
+            <field name="level" string="Level" filter_domain="[('level','>=',self-1),('level','&lt;=',self+1)]"/>
+            <field name="experience" string="Experience"/>
+            <field name="money" string="Money"/>
+            </search>
+        </field>
+      </record>
+
+      <record model="ir.ui.view" id="abyss.player_form_view">
+        <field name="name">Abyss Player Form</field>
+        <field name="model">abyss.player</field>
+        <field name="arch" type="xml">
+        <form>
+            <sheet>
+                <div>
+                    <group>
+                        <group>
+                            <field name="name" placeholder="Player Name"/>
+                            <field name="level" placeholder="Level"/>
+                            <field name="experience" placeholder="Experience"/>
+                            <field name="money" placeholder="Money"/>
+                            <field name="image" widget="image" placeholder="Player Image"/>
+                        </group>
+
+                            <div>
+                                <h4>ARMAS</h4>
+                                <field name="weapons" options="{'no_create': True}" placeholder="Select or Create Weapons"/>
+                            </div>
+
+
+                            <div>
+                                <h4>PERSONAJES</h4>
+                                <field name="characters"  options="{'no_create': True}" placeholder="Select or Create Characters"/>
+                            </div>
+
+                            <div>
+                                <h4>ENEMIGOS</h4>
+                                <field name="enemies"  options="{'no_create': True}" placeholder="Select or Create Enemies"/>
+                            </div>
+
+                    </group>
+                </div>
+            </sheet>
+        </form>
+    </field>
+</record>
+
+
+
+       <record model="ir.ui.view" id="abyss.player_kanban_view">
+            <field name="name">Abyss Player Kanban</field>
+            <field name="model">abyss.player</field>
+            <field name="arch" type="xml">
+        <kanban class="o_kanban_small_column o_kanban_abyss_tasks" on_create="quick_create"
+                quick_create_view="abyss.quick_create_task_form" examples="abyss">
+            <field name="id"/>
+            <field name="image" widget="image"/>
+            <field name="age"/>
+            <field name="success"/>
+            <field name="characters" widget="many2many_tags" options="{'no_create': True}" />
+            <templates>
+                <t t-name="kanban-box">
+                    <div t-attf-class="oe_kanban_global_click o_kanban_record_has_image_fill">
+                        <a type="open">
+                            <img class="oe_kanban_image"
+                                 t-att-alt="record.name.value"
+                                 t-att-src="kanban_image('abyss.player', 'image', record.id.value)" />
+                        </a>
+                        <div t-attf-class="oe_kanban_content">
+                            <h4>
+                                <a type="edit">
+                                    <field name="name"/>
+                                </a>
+                            </h4>
+                            <ul>
+                                Edad:<field name="age"/>
+                                <field name="success"/>
+                                <field name="characters" widget="many2many_tags" options="{'no_create': True}" />
+                            </ul>
+                        </div>
+                    </div>
+                </t>
+            </templates>
+        </kanban>
+    </field>
+</record>
+
+
+
+<!-- Repeat the same structure for other kanban views -->
 
     <record model="ir.ui.view" id="abyss.character_list">
       <field name="name">abyss list</field>
@@ -20,12 +135,274 @@
       <field name="arch" type="xml">
         <tree>
           <field name="name"/>
-          <field name="type"/>
           <field name="stars"/>
+            <field name="description"/>
+          <field name="element_type"/>
+          <field name="weapon_type"/>
+          <field name="small_image" widget="image"/>
+          <field name="stars"/>
+          <field name="level"/>
         </tree>
       </field>
     </record>
 
+
+      <record model="ir.ui.view" id="abyss.character_form_view">
+        <field name="name">Abyss Character Form</field>
+        <field name="model">abyss.character</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="name"/>
+                    <field name="description"/>
+                    <field name="element_type"/>
+                    <field name="weapon_type"/>
+                    <field name="stars"/>
+                    <field name="level"/>
+                    <field name="image" widget="image"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+   <record model="ir.ui.view" id="abyss.character_kanban_view">
+    <field name="name">Abyss Character Kanban</field>
+    <field name="model">abyss.character</field>
+    <field name="arch" type="xml">
+        <kanban class="o_kanban_small_column o_kanban_abyss_tasks" on_create="quick_create"
+                quick_create_view="abyss.quick_create_task_form" examples="abyss">
+            <field name="id"/>
+            <field name="element_type"/>
+            <field name="stars"/>
+            <field name="description"/>
+            <field name="level"/>
+            <field name="image" widget="image"/>
+            <templates>
+                <t t-name="kanban-box">
+                    <div t-attf-class="oe_kanban_global_click o_kanban_record_has_image_fill">
+                        <a type="open">
+                            <img class="oe_kanban_image"
+                                 t-att-alt="record.name.value"
+                                 t-att-src="kanban_image('abyss.character', 'image', record.id.raw_value)" />
+                        </a>
+
+                        <div class="oe_product_desc">
+                            <h4>
+                                <a type="edit">
+                                    <field name="name"/>
+                                </a>
+                            </h4>
+                             <ul>
+                                Elemento:<field name="element_type"/>
+                                Rareza:<field name="stars"/>
+                                Nivel:<field name="level"/>
+                            </ul>
+                        </div>
+                    </div>
+                </t>
+            </templates>
+        </kanban>
+    </field>
+</record>
+
+
+
+
+
+    <record model="ir.ui.view" id="abyss.character_search">
+      <field name="name">abyss search</field>
+      <field name="model">abyss.character</field>
+      <field name="arch" type="xml">
+        <search>
+          <field name="name"/>
+          <field name="element_type"/>
+          <field name="weapon_type"/>
+          <field name="stars"/>
+          <field name="level" string="level" filter_domain="[('level','>=',self-1),('level','&lt;=',self+1)]"/>
+        </search>
+      </field>
+    </record>
+
+
+       <!-- Weapon Views -->
+
+        <record model="ir.ui.view" id="abyss.weapon_list">
+            <field name="name">Weapon List</field>
+            <field name="model">abyss.weapon</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="weapon_type"/>
+                    <field name="damage"/>
+                    <field name="small_image" widget="image"/>
+                    <field name="required_level"/>
+                    <field name="cost"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="abyss.weapon_form_view">
+            <field name="name">Abyss Weapon Form</field>
+            <field name="model">abyss.weapon</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="name"/>
+                        <field name="weapon_type"/>
+                        <field name="damage"/>
+                        <field name="image" widget="image"/>
+                        <field name="required_level"/>
+                        <field name="cost"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+
+      <record model="ir.ui.view" id="abyss.weapon_search">
+            <field name="name">Abyss Weapon Search</field>
+            <field name="model">abyss.weapon</field>
+            <field name="arch" type="xml">
+        <search>
+            <field name="name"/>
+            <field name="weapon_type"/>
+            <field name="damage"/>
+            <field name="required_level" string="Required Level" filter_domain="[('required_level','&lt;',5)]"/>
+            <field name="cost" string="Cost" filter_domain="[('cost','&gt;=',500)]"/>
+        </search>
+        </field>
+    </record>
+
+        <record model="ir.ui.view" id="abyss.weapon_kanban_view">
+            <field name="name">Abyss Weapon Kanban</field>
+            <field name="model">abyss.weapon</field>
+            <field name="arch" type="xml">
+        <kanban class="o_kanban_small_column o_kanban_abyss_tasks" on_create="quick_create"
+                quick_create_view="abyss.quick_create_task_form" examples="abyss">
+            <field name="id"/>
+            <field name="weapon_type"/>
+            <field name="damage"/>
+            <field name="image" widget="image" options="{'no_create': True}" />
+            <templates>
+                <t t-name="kanban-box">
+                    <div t-attf-class="oe_kanban_global_click o_kanban_record_has_image_fill">
+                        <a type="open">
+                            <img class="oe_kanban_image"
+                                 t-att-alt="record.name.value"
+                                 t-att-src="kanban_image('abyss.weapon', 'image', record.id.value)" />
+                        </a>
+
+                        <div class="oe_product_desc">
+                            <h4>
+                                <a type="edit">
+                                    <field name="name"/>
+                                </a>
+                            </h4>
+                            <ul>
+                                Tipo de Arma:<field name="weapon_type"/>
+                                Daño:<field name="damage"/>
+                            </ul>
+                        </div>
+                    </div>
+                </t>
+            </templates>
+        </kanban>
+    </field>
+</record>
+
+
+
+        <!-- Enemy Views -->
+
+      <record model="ir.ui.view" id="abyss.enemy_list">
+            <field name="name">Enemy List</field>
+            <field name="model">abyss.enemy</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="element_type"/>
+                    <field name="health"/>
+                    <field name="damage"/>
+                    <field name="energy"/>
+                    <field name="small_image" widget="image"/>
+                </tree>
+            </field>
+        </record>
+
+      <record model="ir.ui.view" id="abyss.enemy_form_view">
+        <field name="name">Abyss Enemy Form</field>
+        <field name="model">abyss.enemy</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="name"/>
+                    <field name="element_type"/>
+                    <field name="health"/>
+                    <field name="damage"/>
+                    <field name="energy"/>
+                    <field name="image" widget="image" options="{'size': (500, 500)}"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+      <record model="ir.ui.view" id="abyss.enemy_search">
+            <field name="name">Abyss Enemy Search</field>
+            <field name="model">abyss.enemy</field>
+            <field name="arch" type="xml">
+        <search>
+            <field name="name"/>
+            <field name="element_type"/>
+            <field name="health" string="Health"/>
+            <field name="damage" string="Damage" filter_domain="[('damage','&gt;=',30)]"/>
+            <field name="energy" string="Energy" filter_domain="[('energy','&lt;',20)]"/>
+        </search>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="abyss.enemy_kanban_view">
+            <field name="name">Abyss Enemy Kanban</field>
+            <field name="model">abyss.enemy</field>
+            <field name="arch" type="xml">
+        <kanban class="o_kanban_small_column o_kanban_abyss_tasks" on_create="quick_create"
+                quick_create_view="abyss.quick_create_task_form" examples="abyss">
+            <field name="id"/>
+            <field name="element_type"/>
+            <field name="health"/>
+            <field name="damage"/>
+            <field name="energy"/>
+            <field name="image" widget="image" options="{'no_create': True}" />
+            <templates>
+                <t t-name="kanban-box">
+                    <div t-attf-class="oe_kanban_global_click o_kanban_record_has_image_fill">
+                        <a type="open">
+                            <img class="oe_kanban_image"
+                                 t-att-alt="record.name.value"
+                                 t-att-src="kanban_image('abyss.enemy', 'image', record.id.value)" />
+                        </a>
+
+                        <div class="oe_product_desc">
+                            <h4>
+                                <a type="edit">
+                                    <field name="name"/>
+                                </a>
+                            </h4>
+                            <ul>
+                                Elemento:<field name="element_type"/>
+                                Vida:<field name="health"/>
+                                Daño:<field name="damage"/>
+                                Energia:<field name="energy"/>
+                            </ul>
+                        </div>
+                    </div>
+                </t>
+            </templates>
+        </kanban>
+    </field>
+</record>
+
+
+>>>>>>> e5b2357 (Projecte 1er Trimestre)
 
     <!-- actions opening views on models -->
 
@@ -33,13 +410,56 @@
       <field name="name">Abyss Players</field>
       <field name="res_model">abyss.player</field>
       <field name="view_mode">tree,form</field>
+      <field name="view_mode">tree,form,kanban</field>
+    </record>
+
+      <record model="ir.actions.act_window" id="abyss.player_form_action">
+        <field name="name">Abyss Player Form</field>
+        <field name="res_model">abyss.player</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="abyss.player_form_view"/>
     </record>
 
      <record model="ir.actions.act_window" id="abyss.character_action_window">
       <field name="name">Abyss Characters</field>
       <field name="res_model">abyss.character</field>
-      <field name="view_mode">tree,form</field>
+      <field name="view_mode">tree,form,kanban</field>
     </record>
+
+      <record model="ir.actions.act_window" id="abyss.character_form_action">
+        <field name="name">Abyss Character Form</field>
+        <field name="res_model">abyss.character</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="abyss.character_form_view"/>
+    </record>
+
+      <record model="ir.actions.act_window" id="abyss.weapon_action_window">
+      <field name="name">Abyss Weapons</field>
+      <field name="res_model">abyss.weapon</field>
+      <field name="view_mode">tree,form,kanban</field>
+    </record>
+
+      <record model="ir.actions.act_window" id="abyss.weapon_form_action">
+        <field name="name">Abyss Weapon Form</field>
+        <field name="res_model">abyss.weapon</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="abyss.weapon_form_view"/>
+    </record>
+
+      <record model="ir.actions.act_window" id="abyss.enemy_action_window">
+      <field name="name">Abyss Enemies</field>
+      <field name="res_model">abyss.enemy</field>
+      <field name="view_mode">tree,form,kanban</field>
+    </record>
+
+      <record model="ir.actions.act_window" id="abyss.enemy_form_action">
+        <field name="name">Abyss Enemy Form</field>
+        <field name="res_model">abyss.enemy</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="abyss.enemy_form_view"/>
+    </record>
+
+
 
 
     <!-- server action to the one above -->
@@ -75,6 +495,12 @@
     <menuitem name="Characters" id="abyss.menu_2_list" parent="abyss.menu_1"
               action="abyss.character_action_window"/>
 
+
+      <menuitem name="Weapons" id="abyss.menu_3_list" parent="abyss.menu_1"
+              action="abyss.weapon_action_window"/>
+
+      <menuitem name="Enemies" id="abyss.menu_4_list" parent="abyss.menu_1"
+              action="abyss.enemy_action_window"/>
 
   </data>
 </odoo>

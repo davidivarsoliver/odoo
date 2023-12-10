@@ -1,3 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_abyss_player,abyss.player,model_abyss_player,base.group_user,1,1,1,1
 access_abyss_character,abyss.character,model_abyss_character,base.group_user,1,1,1,1
+access_abyss_weapon,abyss.weapon,model_abyss_weapon,base.group_user,1,1,1,1
+access_abyss_enemy,abyss.enemy,model_abyss_enemy,base.group_user,1,1,1,1
