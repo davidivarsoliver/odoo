@@ -41,20 +41,17 @@ class Player(models.Model):
 
     @api.onchange('weapons')
     def _onchange_weapons(self):
-        current_cost = sum(weapon.cost for weapon in self.weapons)
-        previous_cost = sum(weapon.cost for weapon in self._origin.weapons)
+        if self.weapons:
+            new_weapon_cost = self.weapons[-1].cost
+            remaining_money = self.money - new_weapon_cost
 
-        refund_amount = previous_cost - current_cost
-        purchase_amount = current_cost - previous_cost
+            if remaining_money < 0:
+                raise ValidationError("No tienes suficiente dinero para comprar esta arma")
 
-        if purchase_amount > 0:
-            if self.money < purchase_amount:
-                raise ValidationError("No tienes suficiente dinero para comprar estas armas")
-            else:
-                self.money -= purchase_amount
+            self.write({'money': remaining_money})
 
-        if refund_amount > 0:
-            self.money += refund_amount
+        elif not self.weapons:
+            pass
 
     @api.onchange('characters')
     def _onchange_characters(self):
