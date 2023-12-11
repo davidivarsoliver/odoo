@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_paquetalia_furgoneta,paquetalia.furgoneta,model_paquetalia_furgoneta,base.group_user,1,1,1,1
+access_paquetalia_paquet,paquetalia.paquet,model_paquetalia_paquet,base.group_user,1,1,1,1
+access_paquetalia_viatge,paquetalia.viatge,model_paquetalia_viatge,base.group_user,1,1,1,1

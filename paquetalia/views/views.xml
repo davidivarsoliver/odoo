@@ -1,0 +1,134 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+
+ <!-- Vista Form de Furgoneta -->
+        <record id="view_furgoneta_form" model="ir.ui.view">
+            <field name="name">Furgoneta Form</field>
+            <field name="model">paquetalia.furgoneta</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="matricula"/>
+                        <field name="capacitat"/>
+                        <field name="foto" widget="image" options='{"max_width": 500}'/>
+                        <field name="paquets_enviats"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vista Tree de Viatge -->
+        <record id="view_viatge_tree_view" model="ir.ui.view">
+            <field name="name">Viatge Tree</field>
+            <field name="model">paquetalia.viatge</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="identificador"/>
+                    <field name="conductor"/>
+                    <field name="furgoneta"/>
+                    <field name="m3_aprofitats"/>
+                </tree>
+            </field>
+        </record>
+
+                  <!-- Vista Search de Viatge -->
+        <record id="view_viatge_search" model="ir.ui.view">
+            <field name="name">Viatge Search</field>
+            <field name="model">paquetalia.viatge</field>
+            <field name="arch" type="xml">
+                <search>
+                    <group string="Furgoneta" colspan="4"/>
+                    <filter string="Por Furgoneta" name="filter_default_furgoneta" domain="[('furgoneta', '!=', False)]"/>
+                    <field name="identificador"/>
+                    <field name="conductor"/>
+                    <field name="m3_aprofitats"/>
+                </search>
+            </field>
+        </record>
+
+
+
+    <!-- actions opening views on models -->
+
+    <record model="ir.actions.act_window" id="paquetalia.furgoneta_action_window">
+      <field name="name">Furgoneta Paquetalia</field>
+      <field name="res_model">paquetalia.furgoneta</field>
+      <field name="view_mode">tree,form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+      <record model="ir.actions.act_window" id="paquetalia.furgoneta_form_action">
+        <field name="name">Furgoneta Paquetalia Form</field>
+        <field name="res_model">paquetalia.furgoneta</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="abyss.player_form_view"/>
+    </record>
+
+     <record model="ir.actions.act_window" id="paquetalia.paquet_action_window">
+      <field name="name">Paquet Paquetalia</field>
+      <field name="res_model">paquetalia.paquet</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+      <record model="ir.actions.act_window" id="paquetalia.paquet_form_action">
+        <field name="name">Paquet Paquetalia Form</field>
+        <field name="res_model">paquetalia.paquet</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="abyss.character_form_view"/>
+    </record>
+
+      <record model="ir.actions.act_window" id="paquetalia.viatge_action_window">
+      <field name="name">Viatge Paquetalia</field>
+      <field name="res_model">paquetalia.viatge</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+      <record model="ir.actions.act_window" id="paquetalia.viatge_form_action">
+        <field name="name">Viatge Paquetalia Form</field>
+        <field name="res_model">paquetalia.viatge</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="abyss.weapon_form_view"/>
+    </record>
+
+
+    <!-- server action to the one above -->
+<!--
+    <record model="ir.actions.server" id="abyss.action_server">
+      <field name="name">abyss server</field>
+      <field name="model_id" ref="model_abyss_abyss"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": model._name,
+        }
+      </field>
+    </record>
+-->
+
+    <!-- Top menu item -->
+
+    <menuitem name="Paquetalia" id="paquetalia.menu_root"/>
+
+    <!-- menu categories -->
+
+    <menuitem name="Paquetalia" id="paquetalia.menu_1" parent="paquetalia.menu_root"/>
+
+
+    <!-- actions -->
+
+    <menuitem name="Furgoneta" id="paquetalia.menu_1_list" parent="paquetalia.menu_1"
+              action="paquetalia.furgoneta_action_window"/>
+
+    <menuitem name="Paquets" id="paquetalia.menu_2_list" parent="paquetalia.menu_1"
+              action="paquetalia.paquet_action_window"/>
+
+
+      <menuitem name="Viatges" id="paquetalia.menu_3_list" parent="paquetalia.menu_1"
+              action="paquetalia.viatge_action_window"/>
+
+
+  </data>
+</odoo>

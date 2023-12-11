@@ -402,8 +402,6 @@
 </record>
 
 
->>>>>>> e5b2357 (Projecte 1er Trimestre)
-
     <!-- actions opening views on models -->
 
     <record model="ir.actions.act_window" id="abyss.player_action_window">
