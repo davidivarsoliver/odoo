@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime, timedelta
 
 from odoo import models, fields, api
-import random, datetime
 from odoo.exceptions import ValidationError
 
 
@@ -28,16 +28,22 @@ class Player(models.Model):
         domain="[('required_level', '<=', level)]"
     )
     enemies = fields.Many2many('abyss.enemy', string="Enemies")
-    characters = fields.Many2many('abyss.character', string="Characters")
+    characters = fields.Many2many('abyss.character', string="Characters", relation='player_character_rel')
 
-    @api.constrains('experience')
-    def _check_level_up(self):
-        for player in self:
-            if player.experience >= 100 * player.level:
-                player.level += 1
+    @api.model
+    def update_player_experience(self):
+        players = self.search([])
+        for player in players:
+            experience_gain = 10
+            new_experience = player.experience + experience_gain
 
-    def gain_experience(self, amount):
-        self.experience += amount
+            while new_experience >= 100:
+                new_experience -= 100
+                player.write({'level': player.level + 1})
+
+            player.write({'experience': new_experience})
+
+        return True
 
     @api.onchange('weapons')
     def _onchange_weapons(self):
@@ -102,22 +108,20 @@ class Character(models.Model):
     level = fields.Integer(default=1)
 
     abyss_players = fields.Many2many('abyss.player', string="Players")
-    enemies = fields.Many2many('abyss.enemy', string="Enemies")
-
+    enemies = fields.Many2many('abyss.enemy', string="Enemies", relation='character_enemy_rel')
 
     @api.onchange('vida_actual')
     def _onchange_goal(self):
-            if self.muerto <= 0:
-                self.muerto = 1
+        if self.muerto <= 0:
+            self.vida_actual = 1
 
     is_immune = fields.Boolean(default=False, compute='_compute_immunity', store=True)
 
-    @api.depends('element_type', 'abyss_players.enemies')
+    @api.depends('element_type', 'enemies')
     def _compute_immunity(self):
         for character in self:
             character.is_immune = any(
-                enemy.element_type == character.element_type for player in character.abyss_players for enemy in
-                player.enemies
+                enemy.element_type == character.element_type for enemy in character.enemies
             )
 
 
@@ -164,3 +168,159 @@ class Enemy(models.Model):
     def _check_energy(self):
         if self.energy <= 0:
             raise ValidationError("El enemigo no tiene energia")
+
+
+class Battle(models.Model):
+    _name = 'abyss.battle'
+    _description = 'abyss.battle'
+
+    name = fields.Char(string="Nombre de la Batalla", required=True, help="Nombre de la Batalla")
+    description = fields.Text(string="Descripción de la Batalla", help="Descripción de la Batalla")
+    fecha_batalla = fields.Date(string="Fecha de la Batalla")
+    attack = fields.Many2many('abyss.player', string="Atacantes", relation='battle_attack_rel', column1='battle_id', column2='player_id')
+    defend = fields.Many2many('abyss.enemy', string="Defensores", relation='battle_defend_rel', column1='battle_id', column2='enemy_id')
+
+    state = fields.Selection([('1', 'Creation'), ('2', 'Character Selection'), ('3', 'Waiting'),
+                              ('4', 'Finished')], required=True, compute='_get_state')
+    time_left = fields.Char(compute='_get_state')
+
+    winner = fields.Many2one('abyss.player', string="Ganador de la última batalla", ondelete='set null')
+
+    date = fields.Datetime(default=lambda self: fields.Datetime.now() + timedelta(hours=3))
+    finished = fields.Boolean()
+
+    battle_start_time = fields.Datetime()
+
+    def _get_state(self):
+        for battle in self:
+            if not battle.finished:
+                if not battle.attack or not battle.defend:
+                    battle.state = '1'
+                    battle.time_left = ''
+                elif battle.state == '1':
+                    battle.state = '2'
+                    battle.time_left = ''
+                elif battle.state == '2':
+                    battle.state = '3'
+                    battle.time_left = ''
+                elif battle.state == '3':
+                    elapsed_time = fields.Datetime.now() - fields.Datetime.from_string(battle.battle_start_time)
+                    max_battle_duration = 10
+
+                    if elapsed_time.total_seconds() / 60 < max_battle_duration:
+                        battle.state = '3'
+                        battle.time_left = f"{int(max_battle_duration - elapsed_time.total_seconds() / 60)} minutos"
+                    else:
+                        battle.state = '4'
+                        battle.time_left = 'Tiempo agotado'
+                elif battle.state == '4':
+                    battle.time_left = ''
+            else:
+                battle.state = '4'
+                battle.time_left = ''
+
+    def run_battle(self):
+        while not self.finished:
+            if self.state == '1':
+                self.start_battle()
+            elif self.state == '2':
+                self.choose_characters()
+            elif self.state == '3':
+                self.start_fight()
+            elif self.state == '4':
+                break
+
+    def start_battle(self):
+        if not self.attack or not self.defend:
+            raise ValidationError("Debe haber al menos un atacante (jugador) y un defensor (enemigo).")
+
+        for player in self.attack:
+            selected_character = self.env['abyss.character'].search([('characters', 'in', player.character.ids)], limit=1)
+            if not selected_character:
+                raise ValidationError(f"El jugador {player.name} debe elegir un personaje antes de continuar.")
+
+            # Verificar si el personaje tiene un arma asignada
+            if not selected_character.weapons:
+                raise ValidationError(
+                    f"El jugador {player.name} debe tener al menos un arma asignada a su personaje antes de continuar.")
+
+        for player in self.defend:
+            selected_enemy = self.env['abyss.enemy'].search([('enemies', 'in', player.enemy.ids)], limit=1)
+            if not selected_enemy:
+                raise ValidationError(f"El jugador {player.name} debe asignar un enemigo antes de continuar.")
+
+        self.battle_start_time = fields.Datetime.now()
+        self.state = '2'
+
+    def choose_characters(self):
+        if not self.attack or not self.defend:
+            raise ValidationError("Debe haber al menos un atacante (jugador) y un defensor (enemigo).")
+
+        for player in self.attack:
+            # Verificar si el jugador tiene al menos un personaje
+            if not player.character or not player.character[0].weapons:
+                raise ValidationError(
+                    f"El jugador {player.name} debe tener al menos un personaje con un arma antes de continuar.")
+
+        for player in self.defend:
+            selected_enemy = self.env['abyss.enemy'].search([('enemies', 'in', player.enemy.ids)], limit=1)
+            if not selected_enemy:
+                raise ValidationError(f"El jugador {player.name} debe asignar un enemigo antes de continuar.")
+
+        self.state = '3'
+
+    def start_fight(self):
+        attacker = self.attack[0]
+        defender = self.defend[0]
+
+        # Verificar si el atacante tiene al menos un arma
+        if not attacker.character[0].weapons:
+            raise ValidationError(f"El jugador {attacker.name} debe tener al menos un arma antes de atacar.")
+
+        if attacker.character[0].weapons[0].weapon_type == defender.element_type:
+            raise ValidationError("No puedes atacar a un enemigo inmune. Elige otro personaje.")
+
+        player_damage = attacker.character[0].weapons[0].damage
+        enemy_damage = defender.damage
+
+        self.inflict_damage(defender, player_damage)
+
+        if defender.health <= 0:
+            self.reward_winner()
+            self.finished = True
+        else:
+            self.inflict_damage(attacker.character[0], enemy_damage)
+
+            if attacker.character[0].health <= 0:
+                self.finished = True
+                self.winner = defender.name
+                self.reward_winner()
+
+    def inflict_damage(self, target, damage):
+        if isinstance(target, self.env['abyss.character']):
+            target.health -= damage
+            if target.health <= 0:
+                target.is_dead = True
+        elif isinstance(target, self.env['abyss.enemy']):
+            target.health -= damage
+            if target.health <= 0:
+                self.end_battle()
+
+    def end_battle(self):
+        if self.attack[0].character[0].health <= 0:
+            self.winner = self.defend[0].name
+            self.reward_winner()
+        elif self.defend[0].health <= 0:
+            self.winner = self.attack[0].character[0].name
+            self.reward_winner()
+
+        self.finished = True
+
+    def reward_winner(self):
+        winner = self.env['abyss.player'].search([('name', '=', self.winner)], limit=1)
+
+        # Lógica para dar dinero y experiencia al ganador
+        winner.write({
+            'money': winner.money + 1000,
+            'experience': winner.experience + 50
+        })

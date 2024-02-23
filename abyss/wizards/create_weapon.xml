@@ -1,0 +1,37 @@
+<odoo>
+    <data>
+        <!-- explicit list view definition -->
+        <record model="ir.ui.view" id="wizard_weapon_form">
+        <field name="name">wizard abyss weapon form</field>
+        <field name="model">abyss.createweapon</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="cost"/>
+                        <field name="weapon_type"/>
+                        <field name="damage"/>
+                        <field name="required_level"/>
+                        <field name="small_image" widget="image"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="crear_weapon" type="object" string="Crear"
+                    class="oe_highlight"/>
+                    or
+                    <button name="cancel" string="Cancel" special="cancel"/>
+                </footer>
+             </form>
+            </field>
+        </record>
+        <!-- actions opening views on models -->
+        <record model="ir.actions.act_window" id="action_createweapon">
+        <field name="name">Wizard crear arma</field>
+        <field name="res_model">abyss.createweapon</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="wizard_weapon_form"/>
+        <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

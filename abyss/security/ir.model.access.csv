@@ -3,3 +3,6 @@ access_abyss_player,abyss.player,model_abyss_player,base.group_user,1,1,1,1
 access_abyss_character,abyss.character,model_abyss_character,base.group_user,1,1,1,1
 access_abyss_weapon,abyss.weapon,model_abyss_weapon,base.group_user,1,1,1,1
 access_abyss_enemy,abyss.enemy,model_abyss_enemy,base.group_user,1,1,1,1
+access_abyss_createweapon,abyss.createweapon,model_abyss_createweapon,base.group_user,1,1,1,1
+access_abyss_battle,abyss.battle,model_abyss_battle,base.group_user,1,1,1,1
+

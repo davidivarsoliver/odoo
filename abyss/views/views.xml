@@ -24,6 +24,7 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
+                    <field name="age"/>
                     <field name="level"/>
                     <field name="experience"/>
                     <field name="money"/>
@@ -51,39 +52,46 @@
         <field name="model">abyss.player</field>
         <field name="arch" type="xml">
         <form>
+            <header>
+                <button name="%(action_createweapon)d" type="action" string="Crear Arma" class="btn-primary"/>
+            </header>
             <sheet>
-                <div>
+                <group>
                     <group>
-                        <group>
-                            <field name="name" placeholder="Player Name"/>
-                            <field name="level" placeholder="Level"/>
-                            <field name="experience" placeholder="Experience"/>
-                            <field name="money" placeholder="Money"/>
-                            <field name="image" widget="image" placeholder="Player Image"/>
-                        </group>
-
-                            <div>
-                                <h4>ARMAS</h4>
-                                <field name="weapons" options="{'no_create': True}" placeholder="Select or Create Weapons"/>
-                            </div>
-
-
-                            <div>
-                                <h4>PERSONAJES</h4>
-                                <field name="characters"  options="{'no_create': True}" placeholder="Select or Create Characters"/>
-                            </div>
-
-                            <div>
-                                <h4>ENEMIGOS</h4>
-                                <field name="enemies"  options="{'no_create': True}" placeholder="Select or Create Enemies"/>
-                            </div>
-
+                        <field name="name" placeholder="Player Name"/>
+                        <field name="level" placeholder="Level"/>
+                        <field name="age" placeholder="Edad"/>
+                        <field name="birth_date" placeholder="Fecha de nacimiento"/>
+                        <field name="experience" placeholder="Experience"/>
+                        <field name="money" placeholder="Money"/>
+                        <field name="image" widget="image" placeholder="Player Image"/>
                     </group>
-                </div>
+                </group>
+
+                <notebook>
+                    <page string="Armas">
+                        <group>
+                            <field name="weapons" options="{'no_create': True}" placeholder="Select or Create Weapons"/>
+                        </group>
+                    </page>
+
+                    <page string="Personajes">
+                        <group>
+                            <field name="characters" options="{'no_create': True}" placeholder="Select or Create Characters"/>
+                        </group>
+                    </page>
+
+                    <page string="Enemigos">
+                        <group>
+                            <field name="enemies" options="{'no_create': True}" placeholder="Select or Create Enemies"/>
+                        </group>
+                    </page>
+                </notebook>
             </sheet>
         </form>
     </field>
 </record>
+
 
 
 
@@ -124,8 +132,6 @@
         </kanban>
     </field>
 </record>
-
-
 
 <!-- Repeat the same structure for other kanban views -->
 
@@ -234,7 +240,7 @@
                     <field name="name"/>
                     <field name="weapon_type"/>
                     <field name="damage"/>
-                    <field name="small_image" widget="image"/>
+                    <field name="image" widget="image"/>
                     <field name="required_level"/>
                     <field name="cost"/>
                 </tree>
@@ -401,13 +407,32 @@
     </field>
 </record>
 
+      <record model="ir.ui.view" id="abyss.battle_form_view">
+        <field name="name">Abyss Battle Form</field>
+        <field name="model">abyss.battle</field>
+        <field name="arch" type="xml">
+        <form>
+            <header>
+                <button string="Iniciar Batalla" type="object" name="run_battle" class="oe_highlight"/>
+            </header>
+            <group>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="fecha_batalla"/>
+                <field name="attack"  options="{'no_create': True}" placeholder="Seleccionar Atacantes"/>
+                <field name="defend"  options="{'no_create': True}" placeholder="Seleccionar Defensores"/>
+            </group>
+        </form>
+    </field>
+</record>
+
+
 
     <!-- actions opening views on models -->
 
     <record model="ir.actions.act_window" id="abyss.player_action_window">
       <field name="name">Abyss Players</field>
       <field name="res_model">abyss.player</field>
-      <field name="view_mode">tree,form</field>
       <field name="view_mode">tree,form,kanban</field>
     </record>
 
@@ -457,6 +482,13 @@
         <field name="view_id" ref="abyss.enemy_form_view"/>
     </record>
 
+      <record model="ir.actions.act_window" id="abyss.battle_form_action">
+        <field name="name">Abyss Battle Form</field>
+        <field name="res_model">abyss.battle</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="abyss.battle_form_view"/>
+    </record>
+
 
 
 
@@ -499,6 +531,9 @@
 
       <menuitem name="Enemies" id="abyss.menu_4_list" parent="abyss.menu_1"
               action="abyss.enemy_action_window"/>
+
+      <menuitem name="Battles" id="abyss.menu_5_list" parent="abyss.menu_1"
+          action="abyss.battle_form_action"/>
 
   </data>
 </odoo>

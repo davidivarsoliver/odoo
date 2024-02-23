@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.cron" forcecreate="true" id="abyss.player_cron">
+            <field name="name">Update Player Experience Cron</field>
+            <field name="model_id" ref="model_abyss_player"/>
+            <field name="state">code</field>
+            <field name="code">model.update_player_experience()</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="activity_user_type">specific</field>
+            <field name="doall" eval="True"/>
+        </record>
+    </data>
+</odoo>
