@@ -143,6 +143,7 @@
           <field name="name"/>
           <field name="stars"/>
             <field name="description"/>
+            <field name="health"/>
           <field name="element_type"/>
           <field name="weapon_type"/>
           <field name="small_image" widget="image"/>
@@ -161,6 +162,7 @@
                 <group>
                     <field name="name"/>
                     <field name="description"/>
+                    <field name="health"/>
                     <field name="element_type"/>
                     <field name="weapon_type"/>
                     <field name="stars"/>
